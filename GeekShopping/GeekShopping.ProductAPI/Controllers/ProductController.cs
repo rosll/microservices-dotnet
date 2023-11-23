@@ -1,6 +1,5 @@
 ﻿using GeekShopping.ProductAPI.Data.ValueObjects;
 using GeekShopping.ProductAPI.Repository;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GeekShopping.ProductAPI.Controllers
@@ -62,7 +61,7 @@ namespace GeekShopping.ProductAPI.Controllers
         {
             var status = await _productRepository.Delete(id);
 
-            if (status)
+            if (!status)
                 return BadRequest();
 
             return Ok(status);
