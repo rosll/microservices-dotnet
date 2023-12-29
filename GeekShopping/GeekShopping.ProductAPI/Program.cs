@@ -4,6 +4,7 @@ using GeekShopping.ProductAPI.Models.Context;
 using GeekShopping.ProductAPI.Repository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -41,7 +42,36 @@ builder.Services.AddAuthorization(options =>
     });
 });
 
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.EnableAnnotations();
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Description = @"Enter 'Bearer' [space] and your token!",
+        Name = "Authorization",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = "Bearer"
+    });
+
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement 
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                },
+                Scheme = "ouath2",
+                Name = "Bearer",
+                In = ParameterLocation.Header
+            },
+            new List<string>()
+        }
+    });
+});
 
 var app = builder.Build();
 
@@ -52,7 +82,7 @@ app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
 
-app.UseAuthorization();
+app.UseAuthentication();
 
 app.UseAuthorization();
 
